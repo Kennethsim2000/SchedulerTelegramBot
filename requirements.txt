@@ -4,3 +4,4 @@ APScheduler
 uvicorn
 asgiref
 requests
+python-dotenv
