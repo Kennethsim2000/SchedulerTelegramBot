@@ -65,6 +65,7 @@ def get_format_message():
     )
 
 def scheduleMessage(message, chat_id):
+    logger.info(f"Received message for scheduling: {message}")
     parts = message.split(",")
     
     hours = int(parts[1].strip())  
