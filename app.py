@@ -12,6 +12,8 @@ load_dotenv()
 
 TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
+SCHEDULER_URL = os.getenv("SCHEDULER_URL")
+
 
 def send_message(chat_id, text):
     """Send a message to a Telegram chat"""
@@ -34,9 +36,16 @@ def get_start_message():
     return (
         "🤖 Welcome to the Scheduler Bot!\n\n"
         "Use /schedule to set reminders:\n"
-        "Example: /schedule Remember to call mom 2024-12-25 09:00\n"
-        "Format: /schedule <message> <YYYY-MM-DD> <HH:MM>"
+        "Example: /schedule Remember to call mom, 5, hour\n\n"
+        "Format: /schedule <message> <quantity> <unit>\n\n"
+        "Where:\n"
+        "  <message>  - The task or reminder you want to set\n"
+        "  <quantity> - The number (e.g., 5)\n"
+        "  <unit>     - The time unit ('hour' or 'minute')\n\n"
+        "Example 1: /schedule Drink water, 1, hour\n"
+        "Example 2: /schedule Take a break, 30, minute\n"
     )
+
 
 def get_default_message():
     """Get the help message"""
@@ -52,8 +61,31 @@ def get_default_message():
 def get_format_message():
     """Get format message"""
     return (
-        "/schedule Remember to call mom 2024-12-25 09:00"
+        "/schedule Remember to run, 5, hour"
     )
+
+def scheduleMessage(message, chat_id):
+    parts = message.split(",")
+    
+    hours = int(parts[1].strip())  
+    text = parts[0]
+
+    if 1 <= hours <= 5:  
+        url = SCHEDULER_URL[hours - 1]
+        
+    data = {
+        "chat_id": chat_id,
+        "text": text
+    }
+    try:
+        response = requests.post(url, json=data)
+        response.raise_for_status()
+        logger.info(f"Message sent successfully to scheduler {hours} hours")
+        return True
+    except Exception as e:
+        logger.error(f"Error sending message: {e}")
+        return False
+
 
 @app.route("/webhook", methods=["POST"])
 def webhook():
@@ -61,7 +93,6 @@ def webhook():
     try:
         json_data = request.get_json(force=True)
         
-        # Extract message info
         if "message" in json_data:
             message = json_data["message"]
             chat_id = message["chat"]["id"]
@@ -77,8 +108,7 @@ def webhook():
                     default_message = get_format_message()
                     success = send_message(chat_id, default_message)
                 elif user_text.startswith("/schedule"):
-                    default_message = get_format_message()
-                    success = send_message(chat_id, default_message)
+                    success = scheduleMessage(chat_id, message)
                 else:
                     default_message = get_default_message()
                     success = send_message(chat_id, default_message)
@@ -104,9 +134,11 @@ def callback():
     """Handle incoming messages from scheduler"""
     try:
         json_data = request.get_json(force=True)
-        print(json_data)
-        
-        return Response(status=200)
+        text = json_data["text"]
+        chat_id = json_data["chat_id"]
+        success = send_message(chat_id, text)
+        if success:
+            return Response(status=200)
         
     except Exception as e:
         logger.error(f"Webhook error: {e}")
