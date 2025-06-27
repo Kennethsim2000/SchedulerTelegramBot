@@ -72,8 +72,9 @@ def scheduleMessage(message, chat_id):
     hours = int(parts[1].strip())  
     command = parts[0]
     text = command[10:]
+    schedulerArr = SCHEDULER_URL.split(",")
     if 1 <= hours <= 5:  
-        url = SCHEDULER_URL[hours - 1]
+        url = schedulerArr[hours - 1]
         
     data = {
         "chat_id": chat_id,
@@ -85,7 +86,7 @@ def scheduleMessage(message, chat_id):
         logger.info(f"Message sent successfully to scheduler {hours} hours")
         return True
     except Exception as e:
-        logger.error(f"Error sending message: {e}")
+        logger.error(f"Error sending message to scheduler: {e}")
         return False
 
 
