@@ -18,6 +18,7 @@ SCHEDULER_URL = os.getenv("SCHEDULER_URL")
 def send_message(chat_id, text):
     """Send a message to a Telegram chat"""
     url = f"https://api.telegram.org/bot{TOKEN}/sendMessage"
+    logger.info(f"Sending message chatId:{chat_id} text:{text}")
     data = {
         "chat_id": chat_id,
         "text": text
