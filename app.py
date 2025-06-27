@@ -84,6 +84,8 @@ def scheduleMessage(message, chat_id):
         response = requests.post(url, json=data)
         response.raise_for_status()
         logger.info(f"Message sent successfully to scheduler {hours} hours")
+        botReplyMessage = f"✅ Your message has been scheduled and will be delivered in {hours} hour(s)! ⏰\n\n📨 Message: \"{text.strip()}\"\n\nThank you for using the scheduler bot!"
+        send_message(chat_id, botReplyMessage)
         return True
     except Exception as e:
         logger.error(f"Error sending message to scheduler: {e}")
