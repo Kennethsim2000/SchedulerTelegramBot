@@ -109,7 +109,7 @@ def webhook():
                     default_message = get_format_message()
                     success = send_message(chat_id, default_message)
                 elif user_text.startswith("/schedule"):
-                    success = scheduleMessage(chat_id, user_text)
+                    success = scheduleMessage(user_text, chat_id)
                 else:
                     default_message = get_default_message()
                     success = send_message(chat_id, default_message)
