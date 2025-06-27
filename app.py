@@ -68,8 +68,8 @@ def scheduleMessage(message, chat_id):
     parts = message.split(",")
     
     hours = int(parts[1].strip())  
-    text = parts[0]
-
+    command = parts[0]
+    text = command[10:]
     if 1 <= hours <= 5:  
         url = SCHEDULER_URL[hours - 1]
         
@@ -108,7 +108,7 @@ def webhook():
                     default_message = get_format_message()
                     success = send_message(chat_id, default_message)
                 elif user_text.startswith("/schedule"):
-                    success = scheduleMessage(chat_id, message)
+                    success = scheduleMessage(chat_id, user_text)
                 else:
                     default_message = get_default_message()
                     success = send_message(chat_id, default_message)
