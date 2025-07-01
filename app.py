@@ -75,7 +75,9 @@ def scheduleMessage(message, chat_id):
     schedulerArr = SCHEDULER_URL.split(",")
     if 1 <= hours <= 5:  
         url = schedulerArr[hours - 1]
-        
+    else: 
+        send_message(chat_id, "Please select a duration from 1 to 5 hours")
+    
     data = {
         "chat_id": chat_id,
         "text": text
@@ -89,7 +91,7 @@ def scheduleMessage(message, chat_id):
         return True
     except Exception as e:
         logger.error(f"Error sending message to scheduler: {e}")
-        return False
+        send_message(chat_id, f"Error sending message to scheduler: {e}")
 
 
 @app.route("/webhook", methods=["POST"])
@@ -127,7 +129,9 @@ def webhook():
         
     except Exception as e:
         logger.error(f"Webhook error: {e}")
-        return Response(status=500)
+        success = send_message(chat_id, f"Webhook error: {e}")
+        if success:
+            return Response(status=200)
 
 @app.route("/health", methods=["GET"])
 def health_check():
@@ -146,8 +150,10 @@ def callback():
             return Response(status=200)
         
     except Exception as e:
-        logger.error(f"Webhook error: {e}")
-        return Response(status=500)
+        logger.error(f"Callback error: {e}")
+        success = send_message(chat_id, f"Callback error: {e}")
+        if success:
+            return Response(status=200)
 
 def setup_webhook():
     """Set up the webhook"""
