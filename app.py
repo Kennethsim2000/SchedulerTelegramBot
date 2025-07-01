@@ -47,11 +47,19 @@ def get_start_message():
         "Example 2: /schedule Take a break, 30, minute\n"
     )
 
-
+def get_wakeup_message():
+    """Get the wakeup message when the bot comes back online"""
+    return (
+        "⏰ I'm back online and ready to help you stay on schedule!\n"
+        "Use /schedule to set a reminder.\n"
+        "Need help? Just type /help to get started!"
+    )
+    
 def get_default_message():
     """Get the help message"""
     return (
         "🤔 I didn't understand that command.\n"
+        "/wake - Wake bot up\n"
         "/start - Show welcome message\n"
         "/help - Show this help message\n"
         "/schedule - Set reminders\n"
@@ -116,6 +124,9 @@ def webhook():
                     success = send_message(chat_id, default_message)
                 elif user_text.startswith("/schedule"):
                     success = scheduleMessage(user_text, chat_id)
+                elif user_text.startswith("/wake"):
+                    wakeup_message = get_wakeup_message()
+                    success = send_message(chat_id, wakeup_message)
                 else:
                     default_message = get_default_message()
                     success = send_message(chat_id, default_message)
@@ -187,6 +198,5 @@ if __name__ == "__main__":
     setup_webhook()
     
     port = int(os.getenv("PORT", 5000))
-    print(f"Starting server on http://localhost:{port}")
     
     app.run(host="0.0.0.0", port=port, debug=False)
