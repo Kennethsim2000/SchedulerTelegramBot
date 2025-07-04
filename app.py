@@ -85,6 +85,7 @@ def scheduleMessage(message, chat_id):
         url = schedulerArr[hours - 1]
     else: 
         send_message(chat_id, "Please select a duration from 1 to 5 hours")
+        return
     
     data = {
         "chat_id": chat_id,
@@ -100,6 +101,7 @@ def scheduleMessage(message, chat_id):
     except Exception as e:
         logger.error(f"Error sending message to scheduler: {e}")
         send_message(chat_id, f"Error sending message to scheduler: {e}")
+        return True
 
 
 @app.route("/webhook", methods=["POST"])
