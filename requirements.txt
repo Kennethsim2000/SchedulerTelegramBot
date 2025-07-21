@@ -5,3 +5,4 @@ uvicorn
 asgiref
 requests
 python-dotenv
+pymongo

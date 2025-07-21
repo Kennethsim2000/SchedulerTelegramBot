@@ -2,6 +2,7 @@ import os
 import requests
 from flask import Flask, request, Response
 from dotenv import load_dotenv
+from pymongo import MongoClient
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -13,6 +14,14 @@ load_dotenv()
 TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 SCHEDULER_URL = os.getenv("SCHEDULER_URL")
+
+MONGO_URI = os.getenv("MONGO_URI")
+DB_NAME = os.getenv("DB_NAME")
+COLLECTION_NAME = os.getenv("COLLECTION_NAME")
+
+client = MongoClient(MONGO_URI)
+db = client[DB_NAME]
+collection = db[COLLECTION_NAME]
 
 
 def send_message(chat_id, text):
@@ -77,9 +86,13 @@ def get_activate_message(chat_id):
     """Confirmation that the bot is now listening to this chat."""
     return f"✅ Chat {chat_id} activated. This chat will now receive future notifications from the bot."
 
-#TODO: complete persistence of chatId into mongodb database
 def activate_group(chat_id):
-    return
+    """Persist the activated chat_id to MongoDB with status 'activated'."""
+    collection.update_one(
+        {"chat_id": chat_id},                  
+        {"$set": {"status": "activated"}},     
+        upsert=True                            
+    )
     
 def scheduleMessage(message, chat_id):
     logger.info(f"Received message for scheduling: {message}")
