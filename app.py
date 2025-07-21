@@ -123,6 +123,19 @@ def scheduleMessage(message, chat_id):
         logger.error(f"Error sending message to scheduler: {e}")
         send_message(chat_id, f"Error sending message to scheduler: {e}")
         return True
+    
+@app.route("/notify", methods=["POST"])
+def notify():
+    json_data = request.get_json(force=True)
+    if "message" in json_data:
+        message = json_data["message"]
+        activated_chats = collection.find({"status": "activated"})
+        
+        for chat in activated_chats:
+            chat_id = chat.get("chat_id")
+            if chat_id:
+                success = send_message(chat_id, message)
+    return Response(status=200)
 
 
 @app.route("/webhook", methods=["POST"])
