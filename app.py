@@ -73,6 +73,14 @@ def get_format_message():
         "/schedule Remember to run, 5, hour"
     )
 
+def get_activate_message(chat_id):
+    """Confirmation that the bot is now listening to this chat."""
+    return f"✅ Chat {chat_id} activated. This chat will now receive future notifications from the bot."
+
+#TODO: complete persistence of chatId into mongodb database
+def activate_group(chat_id):
+    return
+    
 def scheduleMessage(message, chat_id):
     logger.info(f"Received message for scheduling: {message}")
     parts = message.split(",")
@@ -129,6 +137,11 @@ def webhook():
                 elif user_text.startswith("/wake"):
                     wakeup_message = get_wakeup_message()
                     success = send_message(chat_id, wakeup_message)
+                elif user_text.startswith("/activate"):
+                    activate_group(chat_id)
+                    activate_message = get_activate_message(chat_id)
+                    success = send_message(chat_id, activate_message)
+
                 else:
                     default_message = get_default_message()
                     success = send_message(chat_id, default_message)
