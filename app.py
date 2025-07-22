@@ -8,6 +8,7 @@ import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+load_dotenv()
 
 app = Flask(__name__)
 MEEKPOINT_URL = os.getenv("MEEKPOINT_URL")
@@ -16,7 +17,8 @@ CORS(app, origins=[
     MEEKPOINT_URL,
     LOCAL_URL
 ])
-load_dotenv()
+
+logger.info(f"Starting Flask app with CORS origins: {MEEKPOINT_URL}, {LOCAL_URL}")
 
 TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
