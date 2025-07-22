@@ -3,12 +3,19 @@ import requests
 from flask import Flask, request, Response
 from dotenv import load_dotenv
 from pymongo import MongoClient
+from flask_cors import CORS
 import logging
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 app = Flask(__name__)
+MEEKPOINT_URL = os.getenv("MEEKPOINT_URL")
+LOCAL_URL = os.getenv("LOCAL_URL")
+CORS(app, origins=[
+    MEEKPOINT_URL,
+    LOCAL_URL
+])
 load_dotenv()
 
 TOKEN = os.getenv("BOT_TOKEN")

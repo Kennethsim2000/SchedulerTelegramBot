@@ -1,8 +1,8 @@
 Flask
 python-telegram-bot[telegram]>=20.0
-APScheduler
 uvicorn
 asgiref
 requests
 python-dotenv
 pymongo
+Flask-Cors
