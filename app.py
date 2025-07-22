@@ -127,11 +127,12 @@ def scheduleMessage(message, chat_id):
 @app.route("/notify", methods=["POST"])
 def notify():
     json_data = request.get_json(force=True)
+    logger.info(f"Received call in notify endpoint: {json_data}")
     if "message" in json_data:
         message = json_data["message"]
         activated_chats = collection.find({"status": "activated"})
         
-        for chat in activated_chats:
+        for chat in activated_chats: 
             chat_id = chat.get("chat_id")
             if chat_id:
                 success = send_message(chat_id, message)
