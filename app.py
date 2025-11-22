@@ -40,7 +40,8 @@ def send_message(chat_id, text):
     logger.info(f"Sending message chatId:{chat_id} text:{text}")
     data = {
         "chat_id": chat_id,
-        "text": text
+        "text": text,
+        "parse_mode": "HTML"
     }
     try:
         response = requests.post(url, json=data)
@@ -154,7 +155,7 @@ def get_questions(chat_id):
             question_text = q.get("question", "Unknown question")
             url = q.get("url", "No URL available")
 
-            lines.append(f"{i}. **{question_text}**\n{url}\n")
+            lines.append(f"{i}. <b>{question_text}</b>\n{url}\n")
 
         final_message = "\n".join(lines)
 
