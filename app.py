@@ -23,6 +23,7 @@ logger.info(f"Starting Flask app with CORS origins: {MEEKPOINT_URL}, {LOCAL_URL}
 TOKEN = os.getenv("BOT_TOKEN")
 WEBHOOK_URL = os.getenv("WEBHOOK_URL")
 SCHEDULER_URL = os.getenv("SCHEDULER_URL")
+QUESTIONS_URL = os.getenv("QUESTIONS_URL")
 
 MONGO_URI = os.getenv("MONGO_URI")
 DB_NAME = os.getenv("DB_NAME")
@@ -133,6 +134,34 @@ def scheduleMessage(message, chat_id):
         send_message(chat_id, f"Error sending message to scheduler: {e}")
         return True
     
+def get_questions(chat_id):
+    """Fetch questions from QUESTIONS_URL and return formatted text"""
+    try:
+        response = requests.get(QUESTIONS_URL)
+        response.raise_for_status()
+
+        data = response.json()
+        questions = data.get("questions", [])
+
+        if not questions:
+            return send_message(chat_id, "No questions due.")
+
+        # Build formatted message
+        lines = ["📘 *Here are your questions:*", ""]
+        for i, q in enumerate(questions, start=1):
+            question_text = q.get("question", "Unknown question")
+            url = q.get("url", "No URL available")
+
+            lines.append(f"{i}. *{question_text}*\n{url}\n")
+
+        final_message = "\n".join(lines)
+
+        return send_message(chat_id, final_message)
+
+    except Exception as e:
+        logger.error(f"Error fetching questions: {e}")
+        return send_message(chat_id, f"Error fetching questions: {e}")
+    
 @app.route("/notify", methods=["POST"])
 def notify():
     json_data = request.get_json(force=True)
@@ -168,6 +197,8 @@ def webhook():
                 elif user_text == "/format":
                     default_message = get_format_message()
                     success = send_message(chat_id, default_message)
+                elif user_text == "/getquestions":
+                    success = get_questions(chat_id)
                 elif user_text.startswith("/schedule"):
                     success = scheduleMessage(user_text, chat_id)
                 elif user_text.startswith("/wake"):
