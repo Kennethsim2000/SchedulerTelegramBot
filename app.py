@@ -83,6 +83,8 @@ def get_default_message():
         "/help - Show this help message\n"
         "/schedule - Set reminders\n"
         "/format -  Get the format of the schedule function!\n"
+        "/getquestions -  Get the list of leetcode questions due!\n"
+
         "💡 Tip: Send any other message for general info!"
     )
 
@@ -147,12 +149,12 @@ def get_questions(chat_id):
             return send_message(chat_id, "No questions due.")
 
         # Build formatted message
-        lines = ["📘 *Here are your questions:*", ""]
+        lines = ["📘 **Here are your questions:**", ""]
         for i, q in enumerate(questions, start=1):
             question_text = q.get("question", "Unknown question")
             url = q.get("url", "No URL available")
 
-            lines.append(f"{i}. *{question_text}*\n{url}\n")
+            lines.append(f"{i}. **{question_text}**\n{url}\n")
 
         final_message = "\n".join(lines)
 
